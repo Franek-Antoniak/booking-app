@@ -4,9 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
@@ -17,6 +15,8 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Screening extends BaseEntity {
 	private LocalDateTime screeningTime;
 	@ManyToOne
@@ -24,6 +24,7 @@ public class Screening extends BaseEntity {
 	private ScreeningRoom screeningRoom;
 
 	@OneToMany(mappedBy = "screening")
+	@ToString.Exclude
 	private List<Booking> bookings;
 
 	@ManyToOne
