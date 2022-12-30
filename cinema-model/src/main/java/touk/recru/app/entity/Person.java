@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Embeddable
+@ToString
 public class Person {
 	private String name;
 	private String surname;

@@ -2,20 +2,24 @@ package touk.recru.app.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @SuperBuilder
 @Setter
 @Getter
 @NoArgsConstructor
+@ToString
 public class Movie extends BaseEntity {
 	private String title;
+	private Duration duration;
 	@OneToMany(mappedBy = "movie")
-	private List<Screening> screenings;
+	@Builder.Default()
+	@ToString.Exclude
+	private Set<Screening> screenings = new HashSet<>();
 }

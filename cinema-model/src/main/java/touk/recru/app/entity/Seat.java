@@ -6,6 +6,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -13,10 +14,10 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Getter
 @NoArgsConstructor
+@ToString
 public class Seat extends BaseEntity {
 	private int row;
 	private int seatNumber;
-	private boolean occupied;
 
 	@ManyToOne
 	@JoinColumn(name = "screening_room_id")
