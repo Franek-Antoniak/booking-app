@@ -1,14 +1,15 @@
 package touk.recru.app.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -19,13 +20,17 @@ import java.util.SortedSet;
 @NoArgsConstructor
 @ToString
 public class ScreeningRoom extends BaseEntity {
-	private int rows;
-	@OneToMany(mappedBy = "screeningRoom")
-	@ToString.Exclude
-	private SortedSet<Screening> screenings;
+	private Integer rows;
+	private Integer columns;
+	private String location;
 
 	@OneToMany(mappedBy = "screeningRoom")
-	@JoinColumn(name = "booking_id")
 	@ToString.Exclude
-	private List<Seat> seats;
+	@Builder.Default
+	private List<Screening> screenings = new ArrayList<>();
+
+	@OneToMany(mappedBy = "screeningRoom", fetch = FetchType.EAGER)
+	@ToString.Exclude
+	@Builder.Default
+	private List<Seat> seats = new ArrayList<>();
 }

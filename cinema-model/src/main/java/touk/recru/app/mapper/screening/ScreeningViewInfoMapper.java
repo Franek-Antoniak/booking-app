@@ -6,6 +6,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
 import touk.recru.app.entity.Screening;
+import touk.recru.app.mapper.seat.SeatViewInfoMapper;
 
 @Mapper(
 		componentModel = "spring",
@@ -14,19 +15,24 @@ import touk.recru.app.entity.Screening;
 public interface ScreeningViewInfoMapper {
 
 	@Mappings(
-			{@Mapping(
-					source = "uuid",
-					target = "screeningId"
-			), @Mapping(
-					source = "movie.title",
-					target = "movieTitle"
-			), @Mapping(
-					source = "screeningTime",
-					target = "startTime"
-			), @Mapping(
-					source = "movie.duration",
-					target = "duration"
-			)}
+			{
+					@Mapping(
+							source = "uuid",
+							target = "screeningId"
+					),
+					@Mapping(
+							source = "movie.title",
+							target = "movieTitle"
+					),
+					@Mapping(
+							source = "screeningTime",
+							target = "startTime"
+					),
+					@Mapping(
+							source = "movie.duration",
+							target = "duration"
+					)
+			}
 	)
 	ScreeningViewInfoDTO toDto(Screening screening);
 }

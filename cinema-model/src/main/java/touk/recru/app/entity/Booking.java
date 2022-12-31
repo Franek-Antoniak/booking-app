@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,12 +20,13 @@ import java.util.stream.Collectors;
 public class Booking extends BaseEntity {
 	@Embedded
 	private Person person;
-	@OneToMany(mappedBy = "booking")
+	@OneToMany(mappedBy = "booking", fetch = FetchType.EAGER)
 	@Builder.Default
 	@ToString.Exclude
-	private Set<Ticket> tickets = new HashSet<>();
-	@ManyToOne
+	private List<Ticket> tickets = new ArrayList<>();
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "screening_id")
+	@ToString.Exclude
 	private Screening screening;
 
 	public BigDecimal getTotalPrice() {
