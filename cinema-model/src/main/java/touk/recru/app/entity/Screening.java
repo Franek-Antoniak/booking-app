@@ -1,13 +1,11 @@
 package touk.recru.app.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,7 +23,8 @@ public class Screening extends BaseEntity {
 
 	@OneToMany(mappedBy = "screening")
 	@ToString.Exclude
-	private List<Booking> bookings;
+	@Builder.Default
+	private List<Booking> bookings = new ArrayList<>();
 
 	@ManyToOne
 	@JoinColumn(name = "movie_id")

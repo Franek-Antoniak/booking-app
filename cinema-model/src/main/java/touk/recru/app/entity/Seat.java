@@ -16,8 +16,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @ToString
 public class Seat extends BaseEntity {
-	private int row;
-	private int seatNumber;
+
+	private Integer seatRow;
+	private Integer seatNumber;
 
 	@ManyToOne
 	@JoinColumn(name = "screening_room_id")

@@ -1,4 +1,4 @@
-package touk.recru.app.facade.movie;
+package touk.recru.app.facade;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -6,17 +6,21 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
+import touk.recru.app.dto.room.ScreeningBookingInfoDTO;
 import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
-import touk.recru.app.facade.Facade;
 import touk.recru.app.usecase.MoviesScreeningsSearchByTimeUseCase;
+import touk.recru.app.usecase.SearchAvailableSeatsUseCase;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
-@Facade
 @RequiredArgsConstructor
 @Validated
+@Facade
 public class ScreeningFacade {
 	private final MoviesScreeningsSearchByTimeUseCase screeningSearch;
+	private final SearchAvailableSeatsUseCase availableSeatsSearch;
 
 	public Page<ScreeningViewInfoDTO> search(@NotNull LocalDateTime from) {
 		return screeningSearch.compute(from);
@@ -35,4 +39,10 @@ public class ScreeningFacade {
 			@PositiveOrZero int page, @Positive int size) {
 		return screeningSearch.compute(from, to, page, size);
 	}
+
+	public Optional<ScreeningBookingInfoDTO> searchScreeningBookingInfo(@NotNull UUID screeningId) {
+		return availableSeatsSearch.compute(screeningId);
+	}
 }
+
+

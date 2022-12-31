@@ -1,18 +1,10 @@
 package touk.recru.app.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -26,10 +18,12 @@ import java.util.UUID;
 @ToString
 public abstract class BaseEntity {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
-	@UuidGenerator
-	private UUID uuid;
+
+	@Column(name = "uuid", columnDefinition = "uuid", updatable = false, nullable = false)
+	@Builder.Default
+	private UUID uuid = UUID.randomUUID();
 	@CreationTimestamp
 	private LocalDateTime created;
 	@UpdateTimestamp
