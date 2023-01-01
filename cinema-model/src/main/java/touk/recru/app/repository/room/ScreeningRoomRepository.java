@@ -1,6 +1,5 @@
 package touk.recru.app.repository.room;
 
-import touk.recru.app.entity.Movie;
 import touk.recru.app.entity.ScreeningRoom;
 
 import java.util.List;

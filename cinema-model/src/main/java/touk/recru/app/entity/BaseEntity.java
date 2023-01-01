@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -21,7 +22,12 @@ public abstract class BaseEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 
-	@Column(name = "uuid", columnDefinition = "uuid", updatable = false, nullable = false)
+	@Column(
+			name = "uuid",
+			columnDefinition = "uuid",
+			updatable = false,
+			nullable = false
+	)
 	@Builder.Default
 	private UUID uuid = UUID.randomUUID();
 	@CreationTimestamp

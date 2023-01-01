@@ -6,7 +6,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
 import touk.recru.app.entity.Screening;
-import touk.recru.app.mapper.seat.SeatViewInfoMapper;
 
 @Mapper(
 		componentModel = "spring",

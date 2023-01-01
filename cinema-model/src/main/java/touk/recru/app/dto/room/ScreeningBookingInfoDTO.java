@@ -2,7 +2,6 @@ package touk.recru.app.dto.room;
 
 import lombok.*;
 import touk.recru.app.dto.seat.SeatInfoViewDTO;
-import touk.recru.app.entity.Seat;
 
 import java.util.List;
 import java.util.UUID;

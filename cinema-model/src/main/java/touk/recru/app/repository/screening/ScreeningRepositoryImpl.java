@@ -18,7 +18,13 @@ interface ScreeningRepositoryImpl extends ScreeningRepository, JpaRepository<Scr
 	Page<Screening> findScreeningByScreeningTimeBetween(LocalDateTime screeningTimeStart,
 			LocalDateTime screeningTimeEnd, Pageable pageable);
 
-	@EntityGraph(attributePaths = {"screeningRoom", "bookings", "movie"}, type =
-			EntityGraph.EntityGraphType.FETCH)
+	@EntityGraph(
+			attributePaths = {
+					"screeningRoom",
+					"bookings",
+					"movie"
+			},
+			type = EntityGraph.EntityGraphType.FETCH
+	)
 	Optional<Screening> findScreeningByUuid(UUID screeningId);
 }

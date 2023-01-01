@@ -42,9 +42,9 @@ public class ScreeningFactory {
 
 	public static Screening create(Movie movie, LocalDateTime date, ScreeningRoom room) {
 		return Screening.builder()
-		                .movie(movie)
-		                .screeningTime(date)
-		                .screeningRoom(room)
-		                .build();
+				.movie(movie)
+				.screeningTime(date)
+				.screeningRoom(room)
+				.build();
 	}
 }

@@ -2,7 +2,6 @@ package touk.recru.app.repository.screening;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import touk.recru.app.entity.Screening;
 
 import java.time.LocalDateTime;

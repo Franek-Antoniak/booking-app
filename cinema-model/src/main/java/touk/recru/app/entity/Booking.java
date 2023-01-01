@@ -6,9 +6,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
@@ -20,7 +18,10 @@ import java.util.stream.Collectors;
 public class Booking extends BaseEntity {
 	@Embedded
 	private Person person;
-	@OneToMany(mappedBy = "booking", fetch = FetchType.EAGER)
+	@OneToMany(
+			mappedBy = "booking",
+			fetch = FetchType.EAGER
+	)
 	@Builder.Default
 	@ToString.Exclude
 	private List<Ticket> tickets = new ArrayList<>();
