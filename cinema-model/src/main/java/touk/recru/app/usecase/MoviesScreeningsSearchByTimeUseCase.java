@@ -2,14 +2,11 @@ package touk.recru.app.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import touk.recru.app.dto.room.ScreeningBookingInfoDTO;
 import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
 import touk.recru.app.factory.ScreeningPageableFactory;
 import touk.recru.app.service.screening.ScreeningService;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
 
 @UseCase
 @RequiredArgsConstructor

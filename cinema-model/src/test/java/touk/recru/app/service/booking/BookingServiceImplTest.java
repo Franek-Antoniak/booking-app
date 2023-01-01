@@ -48,22 +48,6 @@ class BookingServiceImplTest {
 		assertEquals(answer3, result3);
 	}
 
-	private List<Booking> getBookingListInMiddle(List<Ticket> tickets) {
-		Booking booking = new Booking();
-		booking.setTickets(List.of(tickets.get(5)));
-		return List.of(booking);
-	}
-
-	private List<Booking> getBookingListAlternately(List<Ticket> tickets) {
-		List<Booking> bookingList = new ArrayList<>();
-		for (int i = 0; i < tickets.size(); i += 2) {
-			Booking booking = new Booking();
-			booking.setTickets(List.of(tickets.get(i)));
-			bookingList.add(booking);
-		}
-		return bookingList;
-	}
-
 	private List<Seat> getSeats() {
 		return Stream.iterate(0, i -> i + 1)
 				.limit(10)
@@ -86,5 +70,21 @@ class BookingServiceImplTest {
 			tickets.get(i)
 					.setSeat(seats.get(i));
 		}
+	}
+
+	private List<Booking> getBookingListAlternately(List<Ticket> tickets) {
+		List<Booking> bookingList = new ArrayList<>();
+		for (int i = 0; i < tickets.size(); i += 2) {
+			Booking booking = new Booking();
+			booking.setTickets(List.of(tickets.get(i)));
+			bookingList.add(booking);
+		}
+		return bookingList;
+	}
+
+	private List<Booking> getBookingListInMiddle(List<Ticket> tickets) {
+		Booking booking = new Booking();
+		booking.setTickets(List.of(tickets.get(5)));
+		return List.of(booking);
 	}
 }

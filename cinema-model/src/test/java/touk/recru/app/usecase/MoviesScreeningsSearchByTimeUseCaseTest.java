@@ -55,7 +55,8 @@ class MoviesScreeningsSearchByTimeUseCaseTest {
 			// when
 			when(screeningService.searchByTime(from, to, pageable)).thenReturn(expectedPage);
 
-			Page<ScreeningViewInfoDTO> result = useCase.compute(from, to, pageable.getPageNumber(), pageable.getPageSize());
+			Page<ScreeningViewInfoDTO> result = useCase.compute(from, to, pageable.getPageNumber(),
+					pageable.getPageSize());
 			// then
 			assertEquals(expectedPage, result);
 		}

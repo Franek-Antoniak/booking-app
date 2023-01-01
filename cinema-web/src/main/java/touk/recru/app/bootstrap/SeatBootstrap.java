@@ -16,10 +16,11 @@ import java.util.List;
 public class SeatBootstrap {
 	private final ScreeningRoomRepository screeningRoomRepository;
 	private final SeatRepository seatRepository;
+
 	@Transactional
 	public void init() {
 		List<ScreeningRoom> screeningRooms = screeningRoomRepository.findAll();
-		for (var room: screeningRooms) {
+		for (var room : screeningRooms) {
 			List<Seat> seats = new ArrayList<>();
 			for (int i = 0; i < room.getRows(); i++) {
 				for (int j = 0; j < room.getColumns(); j++) {

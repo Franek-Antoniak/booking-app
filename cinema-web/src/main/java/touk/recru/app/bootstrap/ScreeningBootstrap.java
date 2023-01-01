@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import touk.recru.app.entity.Movie;
 import touk.recru.app.entity.Screening;
 import touk.recru.app.entity.ScreeningRoom;
-import touk.recru.app.repository.room.ScreeningRoomRepository;
 import touk.recru.app.repository.movie.MovieRepository;
+import touk.recru.app.repository.room.ScreeningRoomRepository;
 import touk.recru.app.repository.screening.ScreeningRepository;
 
 import java.time.LocalDateTime;
