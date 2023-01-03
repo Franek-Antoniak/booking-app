@@ -17,7 +17,7 @@ public class PersonDTO {
 			message = "Name must be at least 3 characters long"
 	)
 	@Pattern(
-			regexp = "^[A-Z][a-zA-Z]*",
+			regexp = "^[A-ZĄĆĘŁŃÓŚŹŻ]\\p{L}*$",
 			message = "Name must start with capital letter"
 	)
 	private String name;
@@ -28,7 +28,7 @@ public class PersonDTO {
 			message = "Surname must be at least 3 characters long"
 	)
 	@Pattern(
-			regexp = "^[A-Z][a-zA-Z]*(-[A-Z][a-zA-Z]*)?$",
+			regexp = "^[A-ZĄĆĘŁŃÓŚŹŻ]\\p{L}*(-[A-ZĄĆĘŁŃÓŚŹŻ]\\p{L}*)?$",
 			message = "Surname must start with capital letter and can contain only letters and one dash"
 	)
 	private String surname;
