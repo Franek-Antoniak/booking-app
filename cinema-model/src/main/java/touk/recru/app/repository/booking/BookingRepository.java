@@ -1,10 +1,12 @@
 package touk.recru.app.repository.booking;
 
 import touk.recru.app.entity.Booking;
+import touk.recru.app.entity.Screening;
 
 import java.util.List;
-import java.util.Set;
 
 public interface BookingRepository {
-	List<Booking> findAllByIdIn(Set<Long> ids);
+	List<Booking> findAllByScreening(Screening screeningEntity);
+
+	<S extends Booking> S save(S entity);
 }

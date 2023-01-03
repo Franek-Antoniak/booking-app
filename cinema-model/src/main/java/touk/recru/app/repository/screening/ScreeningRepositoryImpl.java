@@ -21,7 +21,6 @@ interface ScreeningRepositoryImpl extends ScreeningRepository, JpaRepository<Scr
 	@EntityGraph(
 			attributePaths = {
 					"screeningRoom",
-					"bookings",
 					"movie"
 			},
 			type = EntityGraph.EntityGraphType.FETCH

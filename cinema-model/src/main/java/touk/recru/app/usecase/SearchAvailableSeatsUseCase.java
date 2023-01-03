@@ -1,7 +1,7 @@
 package touk.recru.app.usecase;
 
 import lombok.RequiredArgsConstructor;
-import touk.recru.app.dto.room.ScreeningBookingInfoDTO;
+import touk.recru.app.dto.screening.ScreeningBookingInfoDTO;
 import touk.recru.app.service.screening.ScreeningService;
 
 import java.util.Optional;

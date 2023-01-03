@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  app:
+    image: 'touk-ticket-booking:latest'
+    build:
+      context: .
+    container_name: touk-ticket-booking
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/sample_user
+      - SPRING_DATASOURCE_USERNAME=sample_user
+      - SPRING_DATASOURCE_PASSWORD=strong_password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create
+      - SPRING_JPA_OPEN_IN_VIEW=false
+      - SPRING_JPA_PROPERTIES_JAKARTA_PERSISTENCE_SHARED_CACHE_MODE=ENABLE_SELECTIVE
+      - SERVER_PORT=9090
+      - SPRING_DATASOURCE_INITIALIZATION_MODE=always
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_DATASOURCE_PLATFORM=postgres
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_HIBERNATE_NAMING_IMPLICIT_STRATEGY=org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_USE_SQL_COMMENTS=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_GENERATE_STATISTICS=true
+      - SPRING_MAIN_BANNER_MODE=off
+    ports:
+      - "9090:9090"
+  db:
+    image: 'postgres:15-alpine'
+    container_name: db
+    environment:
+      - POSTGRES_USER=sample_user
+      - POSTGRES_PASSWORD=strong_password

@@ -11,7 +11,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScreeningViewInfoDTO {
+public class MovieScreeningDTO {
 	private UUID screeningId;
 	private String movieTitle;
 	private LocalDateTime startTime;
