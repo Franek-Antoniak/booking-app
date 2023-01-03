@@ -354,6 +354,56 @@ class BookingFacadeTest {
 				.equals("Surname must start with capital letter and can contain only letters and one dash");
 	}
 
+	@Test
+	void book_validationBookingRequest_person_surnameShouldHandlePolishCharacters() throws NoSuchMethodException {
+		// given
+		BookingRequestDTO request = BookingRequestDTO.builder()
+				.screeningId(UUID.randomUUID())
+				.seats(List.of(UUID.randomUUID()))
+				.ticketsType(List.of(TicketTypeDTO.builder()
+						.type(TicketType.ADULT.name())
+						.build()))
+
+				.person(PersonDTO.builder()
+						.name("Name")
+						.surname("Żuręurname")
+						.build())
+				.build();
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
+		// when
+		Set<ConstraintViolation<BookingFacade>> search1Violation = validator.forExecutables()
+				.validateParameters(bookingFacade, BookingFacade.class.getMethod("book", BookingRequestDTO.class),
+						new Object[]{request});
+		// then
+		assert search1Violation.size() == 0;
+	}
+
+	@Test
+	void book_validationBookingRequest_person_nameShouldHandlePolishCharacters() throws NoSuchMethodException {
+		// given
+		BookingRequestDTO request = BookingRequestDTO.builder()
+				.screeningId(UUID.randomUUID())
+				.seats(List.of(UUID.randomUUID()))
+				.ticketsType(List.of(TicketTypeDTO.builder()
+						.type(TicketType.ADULT.name())
+						.build()))
+
+				.person(PersonDTO.builder()
+						.name("Ńąmę")
+						.surname("Surname")
+						.build())
+				.build();
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
+		// when
+		Set<ConstraintViolation<BookingFacade>> search1Violation = validator.forExecutables()
+				.validateParameters(bookingFacade, BookingFacade.class.getMethod("book", BookingRequestDTO.class),
+						new Object[]{request});
+		// then
+		assert search1Violation.size() == 0;
+	}
+
 
 	@Test
 	void book_validationBookingRequest_ticketsType_ticketTypeNotNull() throws NoSuchMethodException {
