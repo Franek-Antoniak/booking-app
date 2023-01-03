@@ -13,6 +13,7 @@ import touk.recru.app.repository.screening.ScreeningRepository;
 import touk.recru.app.repository.ticket.TicketRepository;
 import touk.recru.app.service.ticket.TicketService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -62,6 +63,13 @@ class BookingServiceImpl extends BookingService {
 		}
 		Screening screening = screeningRepository.findScreeningByUuid(bookingRequest.getScreeningId())
 				.orElseThrow(() -> new BookingException("Booking failed. Screening not found"));
+		if (LocalDateTime.now()
+				.plusMinutes(15)
+				.isAfter(screening.getScreeningTime())) {
+			throw new BookingException(
+					"Booking failed. Screening time is too close. You can book tickets at latest 15 minutes before " +
+							"screening time");
+		}
 		List<Booking> bookingList = bookingRepository.findAllByScreening(screening);
 		Set<Seat> availableSeats = new HashSet<>(getAvailableSeats(screening.getScreeningRoom()
 				.getSeats(), bookingList));
