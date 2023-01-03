@@ -42,7 +42,7 @@ requestBody=$(cat <<EOF
    ],
    "person":{
       "name":"Jan",
-      "surname":"Kowalski-Antoniak"
+      "surname":"Kowalski-Antoni\u0118k"
    }
 }
 EOF
