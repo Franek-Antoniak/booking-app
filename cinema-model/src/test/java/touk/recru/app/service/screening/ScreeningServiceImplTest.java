@@ -9,8 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import touk.recru.app.dto.room.ScreeningBookingInfoDTO;
-import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
+import touk.recru.app.dto.screening.MovieScreeningDTO;
+import touk.recru.app.dto.screening.ScreeningBookingInfoDTO;
 import touk.recru.app.dto.seat.SeatInfoViewDTO;
 import touk.recru.app.entity.*;
 import touk.recru.app.mapper.room.ScreeningSeatBookingInfoMapper;
@@ -65,7 +65,7 @@ class ScreeningServiceImplTest {
 		when(screeningRepository.findScreeningByScreeningTimeBetween(from, to, pageable)).thenReturn(expectedPage);
 
 		// when
-		Page<ScreeningViewInfoDTO> actualPage = screeningService.searchByTime(from, to, pageable);
+		Page<MovieScreeningDTO> actualPage = screeningService.searchByTime(from, to, pageable);
 		// then
 		assertEquals(expectedPage.getTotalElements(), actualPage.getTotalElements());
 		assertEquals(expectedPage.getNumber(), actualPage.getNumber());
@@ -85,7 +85,7 @@ class ScreeningServiceImplTest {
 		when(screeningRepository.findScreeningByScreeningTimeAfter(from, pageable)).thenReturn(expectedPage);
 
 		// when
-		Page<ScreeningViewInfoDTO> actualPage = screeningService.searchByTime(from, pageable);
+		Page<MovieScreeningDTO> actualPage = screeningService.searchByTime(from, pageable);
 
 		// then
 		assertEquals(expectedPage.getTotalElements(), actualPage.getTotalElements());
@@ -135,7 +135,7 @@ class ScreeningServiceImplTest {
 								.build())
 						.build()))
 				.build());
-		when(bookingRepository.findAllByIdIn(new HashSet<>(Arrays.asList(1L, 2L)))).thenReturn(bookings);
+		when(bookingRepository.findAllByScreening(any())).thenReturn(bookings);
 		List<Seat> availableSeats = Collections.singletonList(Seat.builder()
 				.uuid(UUID.randomUUID())
 				.build());

@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import touk.recru.app.dto.room.ScreeningBookingInfoDTO;
-import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
+import touk.recru.app.dto.screening.MovieScreeningDTO;
+import touk.recru.app.dto.screening.ScreeningBookingInfoDTO;
 import touk.recru.app.dto.seat.SeatInfoViewDTO;
 import touk.recru.app.entity.Booking;
 import touk.recru.app.entity.Screening;
 import touk.recru.app.entity.Seat;
+import touk.recru.app.exception.DataIntegrationException;
 import touk.recru.app.mapper.room.ScreeningSeatBookingInfoMapper;
 import touk.recru.app.mapper.screening.ScreeningViewInfoMapper;
 import touk.recru.app.mapper.seat.SeatViewInfoMapper;
@@ -36,14 +37,14 @@ class ScreeningServiceImpl extends ScreeningService {
 	private final BookingRepository bookingRepository;
 
 	@Override
-	public Page<ScreeningViewInfoDTO> searchByTime(LocalDateTime from, LocalDateTime to, Pageable pageable) {
+	public Page<MovieScreeningDTO> searchByTime(LocalDateTime from, LocalDateTime to, Pageable pageable) {
 		return screeningRepository.findScreeningByScreeningTimeBetween(from, to, pageable)
 				.map(screeningMapper::toDto);
 
 	}
 
 	@Override
-	public Page<ScreeningViewInfoDTO> searchByTime(LocalDateTime from, Pageable pageable) {
+	public Page<MovieScreeningDTO> searchByTime(LocalDateTime from, Pageable pageable) {
 		return screeningRepository.findScreeningByScreeningTimeAfter(from, pageable)
 				.map(screeningMapper::toDto);
 	}
@@ -57,12 +58,9 @@ class ScreeningServiceImpl extends ScreeningService {
 		Screening screeningEntity = screening.get();
 		List<Seat> seats = screeningRoomRepository.findById(screeningEntity.getScreeningRoom()
 						.getId())
-				.orElseThrow()
+				.orElseThrow(() -> new DataIntegrationException("ScreeningId isn't valid or room doesn't exist"))
 				.getSeats();
-		List<Booking> bookings = bookingRepository.findAllByIdIn(screeningEntity.getBookings()
-				.stream()
-				.map(Booking::getId)
-				.collect(Collectors.toSet()));
+		List<Booking> bookings = bookingRepository.findAllByScreening(screeningEntity);
 		List<SeatInfoViewDTO> availableSeats = bookingService.getAvailableSeats(seats, bookings)
 				.stream()
 				.map(seatViewInfoMapper::toDto)

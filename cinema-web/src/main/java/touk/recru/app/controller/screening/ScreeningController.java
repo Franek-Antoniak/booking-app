@@ -2,10 +2,12 @@ package touk.recru.app.controller.screening;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import touk.recru.app.dto.room.ScreeningBookingInfoDTO;
-import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
+import touk.recru.app.dto.screening.MovieScreeningDTO;
+import touk.recru.app.dto.screening.ScreeningBookingInfoDTO;
+import touk.recru.app.exception.DataIntegrationException;
 import touk.recru.app.facade.ScreeningFacade;
 
 import java.time.LocalDateTime;
@@ -19,7 +21,7 @@ public class ScreeningController {
 	private final ScreeningFacade screeningFacade;
 
 	@GetMapping("/search")
-	public ResponseEntity<Page<ScreeningViewInfoDTO>> searchScreening(
+	public ResponseEntity<Page<MovieScreeningDTO>> searchScreening(
 			@RequestParam(required = false)
 			LocalDateTime from,
 			@RequestParam(required = false)
@@ -53,5 +55,16 @@ public class ScreeningController {
 		return screeningRoomViewInfoDTO.map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound()
 						.build());
+	}
+
+
+	@ResponseStatus(
+			value = HttpStatus.INTERNAL_SERVER_ERROR,
+			reason = "Data integration violation"
+	)
+	@ExceptionHandler(DataIntegrationException.class)
+	public ResponseEntity<String> dataIntegrationException(DataIntegrationException e) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(e.getMessage());
 	}
 }

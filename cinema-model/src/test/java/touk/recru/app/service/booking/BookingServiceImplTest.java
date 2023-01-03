@@ -1,90 +1,250 @@
 package touk.recru.app.service.booking;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import touk.recru.app.entity.Booking;
-import touk.recru.app.entity.Seat;
-import touk.recru.app.entity.Ticket;
+import touk.recru.app.dto.booking.BookingRequestDTO;
+import touk.recru.app.dto.booking.BookingResultDTO;
+import touk.recru.app.dto.person.PersonDTO;
+import touk.recru.app.dto.ticket.type.TicketTypeDTO;
+import touk.recru.app.entity.*;
+import touk.recru.app.exception.BookingException;
+import touk.recru.app.repository.booking.BookingRepository;
+import touk.recru.app.repository.screening.ScreeningRepository;
+import touk.recru.app.repository.ticket.TicketRepository;
+import touk.recru.app.service.ticket.TicketService;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BookingServiceImplTest {
-	@Spy
-	private BookingServiceImpl bookingService;
+
+	@Nested
+	@ExtendWith(MockitoExtension.class)
+	class AvailableSeatsTest {
+		@Spy
+		@InjectMocks
+		private BookingServiceImpl bookingService;
 
 
-	@Test
-	void getAvailableSeats() {
-		// given
-		List<Seat> seats = getSeats();
-		List<Ticket> tickets = getTickets();
-		addTicketsToSeats(seats, tickets);
-		// reserved space alternately
-		List<Booking> bookingList1 = getBookingListAlternately(tickets);
-		// reserved space in the middle
-		List<Booking> bookingList2 = getBookingListInMiddle(tickets);
-		// non reserved space
-		List<Booking> bookingList3 = List.of();
-		List<Seat> answer1 = List.of();
-		List<Seat> answer2 = seats.stream()
-				.filter(seat -> seat.getSeatNumber() < 4 || seat.getSeatNumber() > 6)
-				.toList();
-		List<Seat> answer3 = new ArrayList<>(seats);
-		// when
-		List<Seat> result1 = bookingService.getAvailableSeats(seats, bookingList1);
-		List<Seat> result2 = bookingService.getAvailableSeats(seats, bookingList2);
-		List<Seat> result3 = bookingService.getAvailableSeats(seats, bookingList3);
+		@Test
+		void getAvailableSeats_caseOne() {
+			// given
+			List<Seat> seats = getSeats();
+			List<Ticket> tickets = getTickets();
+			addTicketsToSeats(seats, tickets);
+			// reserved space alternately
+			List<Booking> bookingList1 = getBookingListAlternately(tickets);
+			List<Seat> answer1 = List.of();
+			// when
+			List<Seat> result1 = bookingService.getAvailableSeats(seats, bookingList1);
 
-		// then
-		assertEquals(answer1, result1);
-		assertEquals(answer2, result2);
-		assertEquals(answer3, result3);
-	}
-
-	private List<Seat> getSeats() {
-		return Stream.iterate(0, i -> i + 1)
-				.limit(10)
-				.map(i -> {
-					Seat seat = new Seat();
-					seat.setSeatNumber(i);
-					return seat;
-				})
-				.toList();
-	}
-
-	private List<Ticket> getTickets() {
-		return Stream.generate(Ticket::new)
-				.limit(10)
-				.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
-	}
-
-	private void addTicketsToSeats(List<Seat> seats, List<Ticket> tickets) {
-		for (int i = 0; i < tickets.size(); i++) {
-			tickets.get(i)
-					.setSeat(seats.get(i));
+			// then
+			assertEquals(answer1, result1);
 		}
-	}
 
-	private List<Booking> getBookingListAlternately(List<Ticket> tickets) {
-		List<Booking> bookingList = new ArrayList<>();
-		for (int i = 0; i < tickets.size(); i += 2) {
+		private List<Seat> getSeats() {
+			return Stream.iterate(0, i -> i + 1)
+					.limit(10)
+					.map(i -> {
+						Seat seat = new Seat();
+						seat.setSeatNumber(i);
+						return seat;
+					})
+					.toList();
+		}
+
+		private List<Ticket> getTickets() {
+			return Stream.generate(Ticket::new)
+					.limit(10)
+					.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+		}
+
+		private void addTicketsToSeats(List<Seat> seats, List<Ticket> tickets) {
+			for (int i = 0; i < tickets.size(); i++) {
+				tickets.get(i)
+						.setSeat(seats.get(i));
+			}
+		}
+
+		private List<Booking> getBookingListAlternately(List<Ticket> tickets) {
+			List<Booking> bookingList = new ArrayList<>();
+			for (int i = 0; i < tickets.size(); i += 2) {
+				Booking booking = new Booking();
+				booking.setTickets(List.of(tickets.get(i)));
+				bookingList.add(booking);
+			}
+			return bookingList;
+		}
+
+		@Test
+		void getAvailableSeats_caseTwo() {
+			// given
+			List<Seat> seats = getSeats();
+			List<Ticket> tickets = getTickets();
+			addTicketsToSeats(seats, tickets);
+			// reserved space in the middle
+			List<Booking> bookingList2 = getBookingListInMiddle(tickets);
+			List<Seat> answer2 = seats.stream()
+					.filter(seat -> seat.getSeatNumber() < 4 || seat.getSeatNumber() > 6)
+					.toList();
+			// when
+			List<Seat> result2 = bookingService.getAvailableSeats(seats, bookingList2);
+
+			// then
+			assertEquals(answer2, result2);
+		}
+
+		private List<Booking> getBookingListInMiddle(List<Ticket> tickets) {
 			Booking booking = new Booking();
-			booking.setTickets(List.of(tickets.get(i)));
-			bookingList.add(booking);
+			booking.setTickets(List.of(tickets.get(5)));
+			return List.of(booking);
 		}
-		return bookingList;
+
+		@Test
+		void getAvailableSeats_caseThree() {
+			// given
+			List<Seat> seats = getSeats();
+			List<Ticket> tickets = getTickets();
+			addTicketsToSeats(seats, tickets);
+			// non reserved space
+			List<Booking> bookingList3 = List.of();
+			List<Seat> answer3 = new ArrayList<>(seats);
+			// when
+			List<Seat> result3 = bookingService.getAvailableSeats(seats, bookingList3);
+
+			// then
+			assertEquals(answer3, result3);
+		}
 	}
 
-	private List<Booking> getBookingListInMiddle(List<Ticket> tickets) {
-		Booking booking = new Booking();
-		booking.setTickets(List.of(tickets.get(5)));
-		return List.of(booking);
+	@Nested
+	@ExtendWith(MockitoExtension.class)
+	class BookingTest {
+		@Spy
+		@InjectMocks
+		BookingServiceImpl bookingService;
+
+		@Mock
+		BookingRepository bookingRepository;
+		@Mock
+		ScreeningRepository screeningRepository;
+
+		@Mock
+		TicketService ticketService;
+
+		@Mock
+		TicketRepository ticketRepository;
+
+		@Test
+		void book_shouldThrowBookingExceptionIfNumberOfSeatsAndTicketsTypeNotEqual() {
+			// given
+			BookingRequestDTO request = new BookingRequestDTO();
+			request.setSeats(List.of());
+			request.setTicketsType(List.of(new TicketTypeDTO()));
+			// when
+			// then
+			// Invoke the book method and assert that a BookingException is thrown
+			assertThrows(BookingException.class, () -> bookingService.book(request),
+					"Number of seats and tickets type must be equal");
+		}
+
+		@Test
+		void book_shouldThrowBookingExceptionIfScreeningNotFound() {
+			// given
+			BookingRequestDTO request = new BookingRequestDTO();
+			request.setSeats(List.of());
+			request.setTicketsType(List.of());
+			// when
+			when(screeningRepository.findScreeningByUuid(any())).thenReturn(Optional.empty());
+			// then
+			// Invoke the book method and assert that a BookingException is thrown
+			assertThrows(BookingException.class, () -> bookingService.book(request),
+					"Booking failed. Screening not found");
+		}
+
+		@Test
+		void book_shouldThrowBookingExceptionIfSeatsNotAvailable() {
+			// given
+			BookingRequestDTO request = new BookingRequestDTO();
+			request.setSeats(List.of(UUID.randomUUID()));
+			request.setTicketsType(List.of());
+			// when
+			// then
+			// Invoke the book method and assert that a BookingException is thrown
+			assertThrows(BookingException.class, () -> bookingService.book(request), "Seats not available");
+		}
+
+		@Test
+		void book_shouldBookSeatsAndCreateTickets() {
+			// given
+			List<UUID> uuids = Stream.iterate(0, i -> i + 1)
+					.limit(10)
+					.map(i -> UUID.randomUUID())
+					.toList();
+			LocalDateTime screeningTime = LocalDateTime.now();
+			// when
+			// Set up the mock objects
+			when(screeningRepository.findScreeningByUuid(any())).thenReturn(Optional.of(Screening.builder()
+					.screeningRoom(ScreeningRoom.builder()
+							.seats(List.of(Seat.builder()
+									.uuid(uuids.get(0))
+									.build(), Seat.builder()
+									.uuid(uuids.get(1))
+									.build()))
+							.build())
+					.screeningTime(screeningTime)
+					.build()));
+			when(ticketService.createTickets(anyList(), anyList())).thenReturn(List.of(Ticket.builder()
+					.ticketType(TicketType.ADULT)
+					.build(), Ticket.builder()
+					.ticketType(TicketType.CHILD)
+					.build()));
+			when(bookingRepository.save(any())).thenReturn(new Booking());
+			when(bookingService.getAvailableSeats(anyList(), anyList())).thenReturn(List.of(Seat.builder()
+					.uuid(uuids.get(0))
+					.build(), Seat.builder()
+					.uuid(uuids.get(1))
+					.build()));
+			// Create a BookingRequestDTO with valid data
+			BookingRequestDTO request = new BookingRequestDTO();
+			request.setSeats(List.of(uuids.get(0), uuids.get(1)));
+			request.setScreeningId(UUID.randomUUID());
+			request.setTicketsType(List.of(TicketTypeDTO.builder()
+					.type(TicketType.ADULT.name())
+					.build(), TicketTypeDTO.builder()
+					.type(TicketType.CHILD.name())
+					.build()));
+			request.setPerson(new PersonDTO("John", "Doe"));
+			// Invoke the book method
+			BookingResultDTO result = bookingService.book(request);
+			// Verify that the book method was called correctly
+			verify(screeningRepository).findScreeningByUuid(any());
+			verify(ticketService).createTickets(anyList(), anyList());
+			verify(bookingRepository).save(any());
+			// Check the values of the BookingResultDTO
+			assertNotNull(result);
+			assertNotNull(result.getTotalPrice());
+			assertNotNull(result.getExpirationTime());
+			assertEquals(BigDecimal.valueOf(37.5), result.getTotalPrice());
+			assertEquals(screeningTime.minusMinutes(15), result.getExpirationTime());
+		}
 	}
 }

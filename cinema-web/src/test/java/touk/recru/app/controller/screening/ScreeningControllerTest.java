@@ -11,8 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import touk.recru.app.dto.room.ScreeningBookingInfoDTO;
-import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
+import touk.recru.app.dto.screening.MovieScreeningDTO;
+import touk.recru.app.dto.screening.ScreeningBookingInfoDTO;
 import touk.recru.app.facade.ScreeningFacade;
 
 import java.time.LocalDateTime;
@@ -37,7 +37,7 @@ class ScreeningControllerTest {
 		ScreeningController screeningController;
 
 		@Mock
-		Page<ScreeningViewInfoDTO> mockPage;
+		Page<MovieScreeningDTO> mockPage;
 
 		LocalDateTime now = LocalDateTime.now();
 
@@ -107,7 +107,7 @@ class ScreeningControllerTest {
 		@InjectMocks
 		ScreeningController controller;
 		@Spy
-		Page<ScreeningViewInfoDTO> mockPage;
+		Page<MovieScreeningDTO> mockPage;
 
 		@Test
 		public void testSearchScreening_withAllParams() {
@@ -117,7 +117,7 @@ class ScreeningControllerTest {
 					anyInt())).thenReturn(mockPage);  // return a page with some test data
 
 			// send a GET request to the controller with all parameters
-			ResponseEntity<Page<ScreeningViewInfoDTO>> response = controller.searchScreening(LocalDateTime.now(),
+			ResponseEntity<Page<MovieScreeningDTO>> response = controller.searchScreening(LocalDateTime.now(),
 					LocalDateTime.now(), 0, 20);
 
 			// then
@@ -136,8 +136,8 @@ class ScreeningControllerTest {
 			// return a page with some test data
 
 			// send a GET request to the controller with page and size parameters
-			ResponseEntity<Page<ScreeningViewInfoDTO>> response = controller.searchScreening(LocalDateTime.now(), null,
-					1, 10);
+			ResponseEntity<Page<MovieScreeningDTO>> response = controller.searchScreening(LocalDateTime.now(), null, 1,
+					10);
 
 			// verify that the response has a 200 (OK) status
 			assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -153,7 +153,7 @@ class ScreeningControllerTest {
 			when(mockScreeningFacade.search(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(
 					mockPage);  // return a page with some test data
 			// send a GET request to the controller with from and to parameters
-			ResponseEntity<Page<ScreeningViewInfoDTO>> response = controller.searchScreening(LocalDateTime.now(),
+			ResponseEntity<Page<MovieScreeningDTO>> response = controller.searchScreening(LocalDateTime.now(),
 					LocalDateTime.now(), null, null);
 			// then
 			// verify that the response has a 200 (OK) status
@@ -168,7 +168,7 @@ class ScreeningControllerTest {
 			// given
 			// when
 			// send a GET request to the controller without any parameters
-			ResponseEntity<Page<ScreeningViewInfoDTO>> response = controller.searchScreening(null, null, null, null);
+			ResponseEntity<Page<MovieScreeningDTO>> response = controller.searchScreening(null, null, null, null);
 			// then
 			// verify that the response has a 400 (BAD_REQUEST) status
 			assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());

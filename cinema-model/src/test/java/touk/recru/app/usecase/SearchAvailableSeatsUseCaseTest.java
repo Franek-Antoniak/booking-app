@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import touk.recru.app.dto.room.ScreeningBookingInfoDTO;
+import touk.recru.app.dto.screening.ScreeningBookingInfoDTO;
 import touk.recru.app.service.screening.ScreeningService;
 
 import java.util.Optional;

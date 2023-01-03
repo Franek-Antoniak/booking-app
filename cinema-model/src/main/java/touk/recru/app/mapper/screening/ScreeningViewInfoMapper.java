@@ -4,7 +4,7 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
+import touk.recru.app.dto.screening.MovieScreeningDTO;
 import touk.recru.app.entity.Screening;
 
 @Mapper(
@@ -33,5 +33,5 @@ public interface ScreeningViewInfoMapper {
 					)
 			}
 	)
-	ScreeningViewInfoDTO toDto(Screening screening);
+	MovieScreeningDTO toDto(Screening screening);
 }

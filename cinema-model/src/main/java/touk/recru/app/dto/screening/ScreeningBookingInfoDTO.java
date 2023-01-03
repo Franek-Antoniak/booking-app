@@ -1,4 +1,4 @@
-package touk.recru.app.dto.room;
+package touk.recru.app.dto.screening;
 
 import lombok.*;
 import touk.recru.app.dto.seat.SeatInfoViewDTO;

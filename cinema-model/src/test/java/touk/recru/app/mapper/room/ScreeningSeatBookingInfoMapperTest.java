@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import touk.recru.app.dto.room.ScreeningBookingInfoDTO;
+import touk.recru.app.dto.screening.ScreeningBookingInfoDTO;
 import touk.recru.app.entity.Screening;
 import touk.recru.app.entity.ScreeningRoom;
 

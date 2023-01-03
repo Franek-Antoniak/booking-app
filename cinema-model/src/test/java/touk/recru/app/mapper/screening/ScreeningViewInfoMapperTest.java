@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
+import touk.recru.app.dto.screening.MovieScreeningDTO;
 import touk.recru.app.entity.Movie;
 import touk.recru.app.entity.Screening;
 
@@ -41,7 +41,7 @@ class ScreeningViewInfoMapperTest {
 		when(mockMovie.getDuration()).thenReturn(Duration.ofMinutes(120));
 
 		// given
-		ScreeningViewInfoDTO dto = mapper.toDto(mockScreening);
+		MovieScreeningDTO dto = mapper.toDto(mockScreening);
 
 		// then
 		assertThat(dto.getScreeningId()).isEqualTo(mockScreening.getUuid());

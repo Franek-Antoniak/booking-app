@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import touk.recru.app.dto.screening.ScreeningViewInfoDTO;
+import touk.recru.app.dto.screening.MovieScreeningDTO;
 import touk.recru.app.factory.ScreeningPageableFactory;
 import touk.recru.app.service.screening.ScreeningService;
 
@@ -45,17 +45,17 @@ class MoviesScreeningsSearchByTimeUseCaseTest {
 			LocalDateTime to = LocalDateTime.now()
 					.plusDays(4);
 			Pageable pageable = factory.create(0, 10);
-			ScreeningViewInfoDTO expectedValue = ScreeningViewInfoDTO.builder()
+			MovieScreeningDTO expectedValue = MovieScreeningDTO.builder()
 					.movieTitle("title")
 					.screeningId(UUID.randomUUID())
 					.duration(Duration.ofMinutes(120))
 					.startTime(from)
 					.build();
-			Page<ScreeningViewInfoDTO> expectedPage = new PageImpl<>(List.of(expectedValue));
+			Page<MovieScreeningDTO> expectedPage = new PageImpl<>(List.of(expectedValue));
 			// when
 			when(screeningService.searchByTime(from, to, pageable)).thenReturn(expectedPage);
 
-			Page<ScreeningViewInfoDTO> result = useCase.compute(from, to, pageable.getPageNumber(),
+			Page<MovieScreeningDTO> result = useCase.compute(from, to, pageable.getPageNumber(),
 					pageable.getPageSize());
 			// then
 			assertEquals(expectedPage, result);
@@ -68,17 +68,17 @@ class MoviesScreeningsSearchByTimeUseCaseTest {
 			LocalDateTime to = LocalDateTime.now()
 					.plusDays(4);
 			Pageable pageable = factory.defaultPageable();
-			ScreeningViewInfoDTO expectedValue = ScreeningViewInfoDTO.builder()
+			MovieScreeningDTO expectedValue = MovieScreeningDTO.builder()
 					.movieTitle("title")
 					.screeningId(UUID.randomUUID())
 					.duration(Duration.ofMinutes(120))
 					.startTime(from)
 					.build();
-			Page<ScreeningViewInfoDTO> expectedPage = new PageImpl<>(List.of(expectedValue));
+			Page<MovieScreeningDTO> expectedPage = new PageImpl<>(List.of(expectedValue));
 			// when
 			when(screeningService.searchByTime(from, to, pageable)).thenReturn(expectedPage);
 
-			Page<ScreeningViewInfoDTO> result = useCase.compute(from, to);
+			Page<MovieScreeningDTO> result = useCase.compute(from, to);
 			// then
 			assertEquals(expectedPage, result);
 		}
@@ -100,17 +100,17 @@ class MoviesScreeningsSearchByTimeUseCaseTest {
 			// given
 			LocalDateTime from = LocalDateTime.now();
 			Pageable pageable = factory.create(0, 10);
-			ScreeningViewInfoDTO expectedValue = ScreeningViewInfoDTO.builder()
+			MovieScreeningDTO expectedValue = MovieScreeningDTO.builder()
 					.movieTitle("title")
 					.screeningId(UUID.randomUUID())
 					.duration(Duration.ofMinutes(120))
 					.startTime(from)
 					.build();
-			Page<ScreeningViewInfoDTO> expectedPage = new PageImpl<>(List.of(expectedValue));
+			Page<MovieScreeningDTO> expectedPage = new PageImpl<>(List.of(expectedValue));
 			// when
 			when(screeningService.searchByTime(from, pageable)).thenReturn(expectedPage);
 
-			Page<ScreeningViewInfoDTO> result = useCase.compute(from, pageable.getPageNumber(), pageable.getPageSize());
+			Page<MovieScreeningDTO> result = useCase.compute(from, pageable.getPageNumber(), pageable.getPageSize());
 			// then
 			assertEquals(expectedPage, result);
 		}
@@ -120,17 +120,17 @@ class MoviesScreeningsSearchByTimeUseCaseTest {
 			// given
 			LocalDateTime from = LocalDateTime.now();
 			Pageable pageable = factory.defaultPageable();
-			ScreeningViewInfoDTO expectedValue = ScreeningViewInfoDTO.builder()
+			MovieScreeningDTO expectedValue = MovieScreeningDTO.builder()
 					.movieTitle("title")
 					.screeningId(UUID.randomUUID())
 					.duration(Duration.ofMinutes(120))
 					.startTime(from)
 					.build();
-			Page<ScreeningViewInfoDTO> expectedPage = new PageImpl<>(List.of(expectedValue));
+			Page<MovieScreeningDTO> expectedPage = new PageImpl<>(List.of(expectedValue));
 			// when
 			when(screeningService.searchByTime(from, pageable)).thenReturn(expectedPage);
 
-			Page<ScreeningViewInfoDTO> result = useCase.compute(from);
+			Page<MovieScreeningDTO> result = useCase.compute(from);
 			// then
 			assertEquals(expectedPage, result);
 		}
