@@ -181,6 +181,23 @@ class BookingServiceImplTest {
 		}
 
 		@Test
+		void book_shouldTrowBookingExceptionIfScreeningIsToClose() {
+			// given
+			BookingRequestDTO request = new BookingRequestDTO();
+			request.setSeats(List.of());
+			request.setTicketsType(List.of());
+			LocalDateTime screeningTime = LocalDateTime.now();
+			// when
+			// Set up the mock objects
+			when(screeningRepository.findScreeningByUuid(any())).thenReturn(Optional.of(Screening.builder()
+					.screeningTime(screeningTime)
+					.build()));
+			// then
+			assertThrows(BookingException.class, () -> bookingService.book(request),
+					"Booking failed. Screening time is too close. You can book tickets at latest 15 minutes before " + "screening time");
+		}
+
+		@Test
 		void book_shouldThrowBookingExceptionIfSeatsNotAvailable() {
 			// given
 			BookingRequestDTO request = new BookingRequestDTO();
@@ -199,7 +216,8 @@ class BookingServiceImplTest {
 					.limit(10)
 					.map(i -> UUID.randomUUID())
 					.toList();
-			LocalDateTime screeningTime = LocalDateTime.now();
+			LocalDateTime screeningTime = LocalDateTime.now()
+					.plusDays(1);
 			// when
 			// Set up the mock objects
 			when(screeningRepository.findScreeningByUuid(any())).thenReturn(Optional.of(Screening.builder()

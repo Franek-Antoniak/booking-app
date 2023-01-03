@@ -67,8 +67,7 @@ class BookingServiceImpl extends BookingService {
 				.plusMinutes(15)
 				.isAfter(screening.getScreeningTime())) {
 			throw new BookingException(
-					"Booking failed. Screening time is too close. You can book tickets at latest 15 minutes before " +
-							"screening time");
+					"Booking failed. Screening time is too close. You can book tickets at latest 15 minutes before " + "screening time");
 		}
 		List<Booking> bookingList = bookingRepository.findAllByScreening(screening);
 		Set<Seat> availableSeats = new HashSet<>(getAvailableSeats(screening.getScreeningRoom()
