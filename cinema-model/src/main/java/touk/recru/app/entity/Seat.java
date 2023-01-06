@@ -1,8 +1,6 @@
 package touk.recru.app.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @NoArgsConstructor
 @ToString
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Seat extends BaseEntity {
 
 	private Integer seatRow;

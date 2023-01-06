@@ -1,6 +1,8 @@
 package touk.recru.app.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -15,6 +17,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @ToString
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Movie extends BaseEntity {
 	private String title;
 	private Duration duration;

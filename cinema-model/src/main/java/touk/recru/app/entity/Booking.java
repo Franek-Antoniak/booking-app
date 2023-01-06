@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 @ToString
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Booking extends BaseEntity {
 	@Embedded
 	private Person person;
