@@ -1,8 +1,6 @@
 package touk.recru.app.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -15,6 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @ToString
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class ScreeningRoom extends BaseEntity {
 	private Integer rows;
 	private Integer columns;

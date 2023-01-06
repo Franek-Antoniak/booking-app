@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 @Getter
 @NoArgsConstructor
 @ToString
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Ticket extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private TicketType ticketType;
