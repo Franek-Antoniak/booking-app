@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import touk.recru.app.dto.screening.MovieScreeningDTO;
 import touk.recru.app.dto.screening.ScreeningBookingInfoDTO;
 import touk.recru.app.dto.seat.SeatInfoViewDTO;
@@ -50,6 +53,10 @@ class ScreeningServiceImpl extends ScreeningService {
 	}
 
 	@Override
+	@Transactional(
+			propagation = Propagation.REQUIRED,
+			isolation = Isolation.SERIALIZABLE
+	)
 	public Optional<ScreeningBookingInfoDTO> searchAvailableSeats(UUID screeningId) {
 		Optional<Screening> screening = screeningRepository.findScreeningByUuid(screeningId);
 		if (screening.isEmpty()) {

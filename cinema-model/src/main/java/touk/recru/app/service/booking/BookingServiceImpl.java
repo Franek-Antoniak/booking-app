@@ -1,8 +1,10 @@
 package touk.recru.app.service.booking;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import touk.recru.app.dto.booking.BookingRequestDTO;
 import touk.recru.app.dto.booking.BookingResultDTO;
 import touk.recru.app.dto.person.PersonDTO;
@@ -54,7 +56,10 @@ class BookingServiceImpl extends BookingService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(
+			propagation = Propagation.REQUIRED,
+			isolation = Isolation.SERIALIZABLE
+	)
 	public BookingResultDTO book(BookingRequestDTO bookingRequest) {
 		if (bookingRequest.getTicketsType()
 				.size() != bookingRequest.getSeats()
