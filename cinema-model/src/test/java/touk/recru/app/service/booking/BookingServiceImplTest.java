@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -11,9 +12,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import touk.recru.app.dto.booking.BookingRequestDTO;
 import touk.recru.app.dto.booking.BookingResultDTO;
 import touk.recru.app.dto.person.PersonDTO;
+import touk.recru.app.dto.seat.SeatInfoViewDTO;
 import touk.recru.app.dto.ticket.type.TicketTypeDTO;
 import touk.recru.app.entity.*;
 import touk.recru.app.exception.BookingException;
+import touk.recru.app.mapper.seat.SeatViewInfoMapper;
 import touk.recru.app.repository.booking.BookingRepository;
 import touk.recru.app.repository.screening.ScreeningRepository;
 import touk.recru.app.repository.ticket.TicketRepository;
@@ -40,9 +43,10 @@ class BookingServiceImplTest {
 	@ExtendWith(MockitoExtension.class)
 	class AvailableSeatsTest {
 		@Spy
+		SeatViewInfoMapper seatViewInfoMapper = Mappers.getMapper(SeatViewInfoMapper.class);
+		@Spy
 		@InjectMocks
 		private BookingServiceImpl bookingService;
-
 
 		@Test
 		void getAvailableSeats_caseOne() {
@@ -54,10 +58,10 @@ class BookingServiceImplTest {
 			List<Booking> bookingList1 = getBookingListAlternately(tickets);
 			List<Seat> answer1 = List.of();
 			// when
-			List<Seat> result1 = bookingService.getAvailableSeats(seats, bookingList1);
+			List<SeatInfoViewDTO> result1 = bookingService.getAvailableSeats(seats, bookingList1);
 
 			// then
-			assertEquals(answer1, result1);
+			assertTrue(result1.isEmpty());
 		}
 
 		private List<Seat> getSeats() {
@@ -107,10 +111,14 @@ class BookingServiceImplTest {
 					.filter(seat -> seat.getSeatNumber() < 4 || seat.getSeatNumber() > 6)
 					.toList();
 			// when
-			List<Seat> result2 = bookingService.getAvailableSeats(seats, bookingList2);
+			List<SeatInfoViewDTO> result2 = bookingService.getAvailableSeats(seats, bookingList2);
 
 			// then
-			assertEquals(answer2, result2);
+			assertTrue(answer2.stream()
+					.map(Seat::getUuid)
+					.allMatch(uuid -> result2.stream()
+							.map(SeatInfoViewDTO::getSeatId)
+							.anyMatch(uuid::equals)));
 		}
 
 		private List<Booking> getBookingListInMiddle(List<Ticket> tickets) {
@@ -129,10 +137,14 @@ class BookingServiceImplTest {
 			List<Booking> bookingList3 = List.of();
 			List<Seat> answer3 = new ArrayList<>(seats);
 			// when
-			List<Seat> result3 = bookingService.getAvailableSeats(seats, bookingList3);
+			List<SeatInfoViewDTO> result3 = bookingService.getAvailableSeats(seats, bookingList3);
 
 			// then
-			assertEquals(answer3, result3);
+			assertTrue(answer3.stream()
+					.map(Seat::getUuid)
+					.allMatch(uuid -> result3.stream()
+							.map(SeatInfoViewDTO::getSeatId)
+							.anyMatch(uuid::equals)));
 		}
 	}
 
@@ -153,6 +165,9 @@ class BookingServiceImplTest {
 
 		@Mock
 		TicketRepository ticketRepository;
+
+		@Mock
+		SeatViewInfoMapper seatViewInfoMapper;
 
 		@Test
 		void book_shouldThrowBookingExceptionIfNumberOfSeatsAndTicketsTypeNotEqual() {
@@ -237,10 +252,10 @@ class BookingServiceImplTest {
 					.ticketType(TicketType.CHILD)
 					.build()));
 			when(bookingRepository.save(any())).thenReturn(new Booking());
-			when(bookingService.getAvailableSeats(anyList(), anyList())).thenReturn(List.of(Seat.builder()
-					.uuid(uuids.get(0))
-					.build(), Seat.builder()
-					.uuid(uuids.get(1))
+			when(bookingService.getAvailableSeats(anyList(), anyList())).thenReturn(List.of(SeatInfoViewDTO.builder()
+					.seatId(uuids.get(0))
+					.build(), SeatInfoViewDTO.builder()
+					.seatId(uuids.get(1))
 					.build()));
 			// Create a BookingRequestDTO with valid data
 			BookingRequestDTO request = new BookingRequestDTO();
