@@ -65,6 +65,7 @@ class BookingServiceImplTest {
 					.limit(10)
 					.map(i -> {
 						Seat seat = new Seat();
+						seat.setSeatRow(0);
 						seat.setSeatNumber(i);
 						return seat;
 					})

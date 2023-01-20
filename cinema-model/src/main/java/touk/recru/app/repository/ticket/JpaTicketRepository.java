@@ -6,5 +6,5 @@ import touk.recru.app.entity.Ticket;
 
 
 @Repository
-interface TicketRepositoryImpl extends TicketRepository, JpaRepository<Ticket, Long> {
+interface JpaTicketRepository extends TicketRepository, JpaRepository<Ticket, Long> {
 }

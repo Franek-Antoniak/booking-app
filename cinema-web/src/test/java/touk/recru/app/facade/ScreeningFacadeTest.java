@@ -35,9 +35,12 @@ class ScreeningFacadeTest {
 		Validator validator = factory.getValidator();
 		// when
 		Set<ConstraintViolation<ScreeningFacade>> search1Violation = validator.forExecutables()
-				.validateParameters(screeningFacade, ScreeningFacade.class.getMethod("search", LocalDateTime.class),
+				.validateParameters(screeningFacade,
+						ScreeningFacade.class.getMethod("search", LocalDateTime.class, int.class, int.class),
 						new Object[]{
-								null
+								null,
+								0,
+								20
 						});
 		// then
 		assert search1Violation.size() == 1;
@@ -58,10 +61,12 @@ class ScreeningFacadeTest {
 		// when
 		Set<ConstraintViolation<ScreeningFacade>> searchViolation = validator.forExecutables()
 				.validateParameters(screeningFacade,
-						ScreeningFacade.class.getMethod("search", LocalDateTime.class, LocalDateTime.class),
-						new Object[]{
+						ScreeningFacade.class.getMethod("search", LocalDateTime.class, LocalDateTime.class, int.class,
+								int.class), new Object[]{
 								LocalDateTime.now(),
-								null
+								null,
+								0,
+								20
 						});
 		// then
 		assert searchViolation.size() == 1;

@@ -22,14 +22,6 @@ public class ScreeningFacade {
 	private final MoviesScreeningsSearchByTimeUseCase screeningSearch;
 	private final SearchAvailableSeatsUseCase availableSeatsSearch;
 
-	public Page<MovieScreeningDTO> search(@NotNull LocalDateTime from) {
-		return screeningSearch.compute(from);
-	}
-
-	public Page<MovieScreeningDTO> search(@NotNull LocalDateTime from, @NotNull LocalDateTime to) {
-		return screeningSearch.compute(from, to);
-	}
-
 	public Page<MovieScreeningDTO> search(@NotNull LocalDateTime from, @PositiveOrZero int page, @Positive int size) {
 		return screeningSearch.compute(from, page, size);
 	}

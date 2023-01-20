@@ -16,10 +16,11 @@ import touk.recru.app.repository.ticket.TicketRepository;
 import touk.recru.app.service.ticket.TicketService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +31,6 @@ class BookingServiceImpl extends BookingService {
 	private final TicketService ticketService;
 	private final TicketRepository ticketRepository;
 
-
 	@Override
 	public List<Seat> getAvailableSeats(List<Seat> seats, List<Booking> bookingList) {
 		Set<Seat> bookedSeats = bookingList.stream()
@@ -38,21 +38,17 @@ class BookingServiceImpl extends BookingService {
 				.flatMap(List::stream)
 				.map(Ticket::getSeat)
 				.collect(Collectors.toSet());
-		List<Seat> availableSeats = new ArrayList<>();
-		for (int i = 0; i < seats.size(); i++) {
-			Seat seat = seats.get(i);
-			if (bookedSeats.contains(seat)) {
-				continue;
-			}
-			if (i > 0 && bookedSeats.contains(seats.get(i - 1))) {
-				continue;
-			}
-			if (i < seats.size() - 1 && bookedSeats.contains(seats.get(i + 1))) {
-				continue;
-			}
-			availableSeats.add(seat);
-		}
-		return availableSeats;
+		Map<Integer, List<Seat>> seatsByRow = seats.stream()
+				.collect(Collectors.groupingBy(Seat::getSeatRow));
+		Predicate<Seat> isSeatAvailable = seat -> {
+			List<Seat> seatsInRow = seatsByRow.get(seat.getSeatRow());
+			Seat seat1 = seatsInRow.get(Math.max(seat.getSeatNumber() - 1, 0));
+			Seat seat2 = seatsInRow.get(Math.min(seat.getSeatNumber() + 1, seatsInRow.size() - 1));
+			return !(bookedSeats.contains(seat1) || bookedSeats.contains(seat2) || bookedSeats.contains(seat));
+		};
+		return seats.stream()
+				.filter(isSeatAvailable)
+				.collect(Collectors.toList());
 	}
 
 	@Override

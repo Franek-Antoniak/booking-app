@@ -1,5 +1,6 @@
 package touk.recru.app.controller.screening;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -11,94 +12,28 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import touk.recru.app.dto.screening.MovieScreeningDTO;
 import touk.recru.app.dto.screening.ScreeningBookingInfoDTO;
+import touk.recru.app.exception.DataIntegrationException;
+import touk.recru.app.exception.ScreeningNotFoundException;
 import touk.recru.app.facade.ScreeningFacade;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ScreeningControllerTest {
-	@Nested
-	@ExtendWith(MockitoExtension.class)
-	class SearchScreeningHowManyTimesFacadeIsCalled {
-
-		@Mock
-		ScreeningFacade screeningFacade;
-
-		@InjectMocks
-		ScreeningController screeningController;
-
-		@Mock
-		Page<MovieScreeningDTO> mockPage;
-
-		LocalDateTime now = LocalDateTime.now();
-
-		@Test
-		void searchScreening_withNulls() {
-			// given
-			// when
-			screeningController.searchScreening(null, null, null, null);
-			// then
-			verifyNoInteractions(screeningFacade);
-		}
-
-		@Test
-		void searchScreening_fromAndToNulls() {
-			// given
-			// when
-			screeningController.searchScreening(null, null, 5, 5);
-			// then
-			verifyNoInteractions(screeningFacade);
-		}
-
-		@Test
-		void searchScreening_fromAndToNotNulls() {
-			// given
-			// when
-			when(screeningFacade.search(any(), any(), anyInt(), anyInt())).thenReturn(mockPage);
-			screeningController.searchScreening(now, now, 5, 5);
-			// then
-			verify(screeningFacade, times(1)).search(any(), any(), anyInt(), anyInt());
-		}
-
-		@Test
-		void searchScreening_fromAndToNotNullsButSizeAndPageNulls() {
-			// given
-			// when
-			when(screeningFacade.search(any(), any())).thenReturn(mockPage);
-			screeningController.searchScreening(now, now, null, null);
-			// then
-			verify(screeningFacade, times(1)).search(any(), any());
-		}
-
-		@Test
-		void searchScreening_fromNotNullToNull() {
-			// given
-			// when
-			when(screeningFacade.search(any(), anyInt(), anyInt())).thenReturn(mockPage);
-			screeningController.searchScreening(now, null, 5, 5);
-			// then
-			verify(screeningFacade, times(1)).search(any(), anyInt(), anyInt());
-		}
-
-		@Test
-		void searchScreening_fromNull() {
-			// given
-			// when
-			screeningController.searchScreening(null, now, null, null);
-			// then
-			verifyNoInteractions(screeningFacade);
-		}
-	}
-
 	@Nested
 	@ExtendWith(MockitoExtension.class)
 	class SearchScreeningResponseStatusTests {
@@ -106,103 +41,122 @@ class ScreeningControllerTest {
 		ScreeningFacade mockScreeningFacade;
 		@InjectMocks
 		ScreeningController controller;
-		@Spy
-		Page<MovieScreeningDTO> mockPage;
+		Page<MovieScreeningDTO> mockPage = Page.empty();
+
+		MockMvc mockMvc;
+
+		@BeforeEach
+		void setUp() {
+			mockMvc = MockMvcBuilders.standaloneSetup(controller)
+					.build();
+		}
 
 		@Test
-		public void testSearchScreening_withAllParams() {
+		public void testSearchScreening_withAllParams() throws Exception {
 			// given
 			// when
 			when(mockScreeningFacade.search(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
 					anyInt())).thenReturn(mockPage);  // return a page with some test data
 
 			// send a GET request to the controller with all parameters
-			ResponseEntity<Page<MovieScreeningDTO>> response = controller.searchScreening(LocalDateTime.now(),
-					LocalDateTime.now(), 0, 20);
-
-			// then
-			// verify that the response has a 200 (OK) status
-			assertEquals(HttpStatus.OK, response.getStatusCode());
+			mockMvc.perform(get("/screenings").param("from", LocalDateTime.now()
+									.toString())
+							.param("to", LocalDateTime.now()
+									.toString())
+							.param("page", "0")
+							.param("size", "20"))
+					.andExpect(status().isOk());
 
 			// verify that the mock ScreeningFacade's search method was called with the correct arguments
 			verify(mockScreeningFacade).search(any(LocalDateTime.class), any(LocalDateTime.class), eq(0), eq(20));
 		}
 
 		@Test
-		public void testSearchScreening_withPageAndSizeParams() {
+		public void testSearchScreening_withPageAndSizeParams() throws Exception {
 			// given
 			// when
 			when(mockScreeningFacade.search(any(LocalDateTime.class), anyInt(), anyInt())).thenReturn(mockPage);
 			// return a page with some test data
 
 			// send a GET request to the controller with page and size parameters
-			ResponseEntity<Page<MovieScreeningDTO>> response = controller.searchScreening(LocalDateTime.now(), null, 1,
-					10);
-
-			// verify that the response has a 200 (OK) status
-			assertEquals(HttpStatus.OK, response.getStatusCode());
+			mockMvc.perform(get("/screenings").param("from", LocalDateTime.now()
+									.toString())
+							.param("to", (String) null)
+							.param("page", "1")
+							.param("size", "10"))
+					.andExpect(status().isOk());
 
 			// verify that the mock ScreeningFacade's search method was called with the correct arguments
 			verify(mockScreeningFacade).search(any(LocalDateTime.class), eq(1), eq(10));
 		}
 
 		@Test
-		public void testSearchScreening_withFromAndToParams() {
+		public void testSearchScreening_withFromAndToParams() throws Exception {
 			// given
 			// when
-			when(mockScreeningFacade.search(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(
-					mockPage);  // return a page with some test data
+			// return a page with some test data
+			when(mockScreeningFacade.search(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
+					anyInt())).thenReturn(mockPage);
 			// send a GET request to the controller with from and to parameters
-			ResponseEntity<Page<MovieScreeningDTO>> response = controller.searchScreening(LocalDateTime.now(),
-					LocalDateTime.now(), null, null);
-			// then
-			// verify that the response has a 200 (OK) status
-			assertEquals(HttpStatus.OK, response.getStatusCode());
+			mockMvc.perform(get("/screenings").param("from", LocalDateTime.now()
+									.toString())
+							.param("to", LocalDateTime.now()
+									.toString()))
+					.andExpect(status().isOk());
 
 			// verify that the mock ScreeningFacade's search method was called with the correct arguments
-			verify(mockScreeningFacade).search(any(LocalDateTime.class), any(LocalDateTime.class));
+			verify(mockScreeningFacade).search(any(LocalDateTime.class), any(LocalDateTime.class), eq(0), eq(20));
 		}
 
 		@Test
-		public void testSearchScreening_withoutParams() {
+		public void testSearchScreening_withoutParams() throws Exception {
 			// given
 			// when
 			// send a GET request to the controller without any parameters
-			ResponseEntity<Page<MovieScreeningDTO>> response = controller.searchScreening(null, null, null, null);
+			mockMvc.perform(get("/screenings"))
+					.andExpect(status().isBadRequest());
 			// then
-			// verify that the response has a 400 (BAD_REQUEST) status
-			assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
 			// verify that the mock ScreeningFacade's search method was not called
 			verifyNoInteractions(mockScreeningFacade);
 		}
 
-	}
+		@Test
+		void testSearchScreening_screeningNotFoundException() throws Exception {
+			// given
+			// when
+			// return a page with some test data
+			ScreeningNotFoundException exception = new ScreeningNotFoundException("test");
+			when(mockScreeningFacade.search(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
+					anyInt())).thenThrow(exception);
+			// send a GET request to the controller with from and to parameters
+			mockMvc.perform(get("/screenings").param("from", LocalDateTime.now()
+									.toString())
+							.param("to", LocalDateTime.now()
+									.toString()))
+					.andExpect(status().isBadRequest())
+					.andExpect(result -> assertEquals(exception.getMessage(),
+							Objects.requireNonNull(result.getResolvedException())
+									.getMessage()));
+		}
 
-	@Nested
-	@ExtendWith(MockitoExtension.class)
-	class SearchScreeningBookingInfoHowManyTimesFacadeIsCalled {
-
-		@Mock
-		ScreeningFacade screeningFacade;
-
-		@InjectMocks
-		ScreeningController screeningController;
-
-		UUID screeningId = UUID.randomUUID();
-
-		@Spy
-		ScreeningBookingInfoDTO mockScreeningBookingInfoDTO;
 
 		@Test
-		void searchScreening_withNulls() {
+		void testSearchScreening_dataIntegrationException() throws Exception {
 			// given
-			Optional<ScreeningBookingInfoDTO> mockedOptional = Optional.of(mockScreeningBookingInfoDTO);
 			// when
-			when(screeningFacade.searchScreeningBookingInfo(screeningId)).thenReturn(mockedOptional);
-			screeningController.searchScreeningBookingInfo(screeningId);
-			// then
-			verify(screeningFacade, times(1)).searchScreeningBookingInfo(screeningId);
+			// return a page with some test data
+			DataIntegrationException exception = new DataIntegrationException("test");
+			when(mockScreeningFacade.search(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
+					anyInt())).thenThrow(exception);
+			// send a GET request to the controller with from and to parameters
+			mockMvc.perform(get("/screenings").param("from", LocalDateTime.now()
+									.toString())
+							.param("to", LocalDateTime.now()
+									.toString()))
+					.andExpect(status().isInternalServerError())
+					.andExpect(result -> assertEquals(exception.getMessage(),
+							Objects.requireNonNull(result.getResolvedException())
+									.getMessage()));
 		}
 	}
 

@@ -14,14 +14,6 @@ public class MoviesScreeningsSearchByTimeUseCase {
 	private final ScreeningService screeningService;
 	private final ScreeningPageableFactory pageFactory;
 
-	public Page<MovieScreeningDTO> compute(LocalDateTime from) {
-		return screeningService.searchByTime(from, pageFactory.defaultPageable());
-	}
-
-	public Page<MovieScreeningDTO> compute(LocalDateTime from, LocalDateTime to) {
-		return screeningService.searchByTime(from, to, pageFactory.defaultPageable());
-	}
-
 	public Page<MovieScreeningDTO> compute(LocalDateTime from, int page, int size) {
 		return screeningService.searchByTime(from, pageFactory.create(page, size));
 	}
