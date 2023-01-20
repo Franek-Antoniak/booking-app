@@ -24,10 +24,10 @@ import touk.recru.app.repository.screening.ScreeningRepository;
 import touk.recru.app.service.booking.BookingService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,10 +66,7 @@ class ScreeningServiceImpl extends ScreeningService {
 				.orElseThrow(() -> new DataIntegrationException("ScreeningId isn't valid or room doesn't exist"))
 				.getSeats();
 		List<Booking> bookings = bookingRepository.findAllByScreening(screening);
-		List<SeatInfoViewDTO> availableSeats = bookingService.getAvailableSeats(seats, bookings)
-				.stream()
-				.map(seatViewInfoMapper::toDto)
-				.collect(Collectors.toList());
+		List<SeatInfoViewDTO> availableSeats = new ArrayList<>(bookingService.getAvailableSeats(seats, bookings));
 		ScreeningBookingInfoDTO screeningBookingInfoDTO = screeningSeatBookingInfoMapper.toDto(screening);
 		screeningBookingInfoDTO.setAvailableSeats(availableSeats);
 		return Optional.of(screeningBookingInfoDTO);

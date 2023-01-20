@@ -8,18 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 import touk.recru.app.dto.booking.BookingRequestDTO;
 import touk.recru.app.dto.booking.BookingResultDTO;
 import touk.recru.app.dto.person.PersonDTO;
+import touk.recru.app.dto.seat.SeatInfoViewDTO;
 import touk.recru.app.entity.*;
 import touk.recru.app.exception.BookingException;
+import touk.recru.app.mapper.seat.SeatViewInfoMapper;
 import touk.recru.app.repository.booking.BookingRepository;
 import touk.recru.app.repository.screening.ScreeningRepository;
 import touk.recru.app.repository.ticket.TicketRepository;
 import touk.recru.app.service.ticket.TicketService;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -30,9 +29,10 @@ class BookingServiceImpl extends BookingService {
 	private final ScreeningRepository screeningRepository;
 	private final TicketService ticketService;
 	private final TicketRepository ticketRepository;
+	private final SeatViewInfoMapper mapper;
 
 	@Override
-	public List<Seat> getAvailableSeats(List<Seat> seats, List<Booking> bookingList) {
+	public List<SeatInfoViewDTO> getAvailableSeats(List<Seat> seats, List<Booking> bookingList) {
 		Set<Seat> bookedSeats = bookingList.stream()
 				.map(Booking::getTickets)
 				.flatMap(List::stream)
@@ -48,6 +48,7 @@ class BookingServiceImpl extends BookingService {
 		};
 		return seats.stream()
 				.filter(isSeatAvailable)
+				.map(mapper::toDto)
 				.collect(Collectors.toList());
 	}
 
@@ -71,8 +72,14 @@ class BookingServiceImpl extends BookingService {
 					"Booking failed. Screening time is too close. You can book tickets at latest 15 minutes before " + "screening time");
 		}
 		List<Booking> bookingList = bookingRepository.findAllByScreening(screening);
-		Set<Seat> availableSeats = new HashSet<>(getAvailableSeats(screening.getScreeningRoom()
-				.getSeats(), bookingList));
+		List<Seat> everySeats = screening.getScreeningRoom()
+				.getSeats();
+		Set<SeatInfoViewDTO> availableSeatsDTO = new HashSet<>(getAvailableSeats(everySeats, bookingList));
+		HashMap<UUID, SeatInfoViewDTO> map = new HashMap<>();
+		availableSeatsDTO.forEach(seatInfoViewDTO -> map.put(seatInfoViewDTO.getSeatId(), seatInfoViewDTO));
+		Set<Seat> availableSeats = everySeats.stream()
+				.filter(seat -> map.containsKey(seat.getUuid()))
+				.collect(Collectors.toSet());
 		List<Seat> bookingSeats = availableSeats.stream()
 				.filter(seat -> bookingRequest.getSeats()
 						.contains(seat.getUuid()))

@@ -49,6 +49,7 @@ class ScreeningServiceImplTest {
 	@InjectMocks
 	private ScreeningServiceImpl screeningService;
 
+
 	@Test
 	void searchByTime_between_times_shouldReturnCorrectPage() {
 		// given
@@ -136,15 +137,15 @@ class ScreeningServiceImplTest {
 						.build()))
 				.build());
 		when(bookingRepository.findAllByScreening(any())).thenReturn(bookings);
-		List<Seat> availableSeats = Collections.singletonList(Seat.builder()
-				.uuid(UUID.randomUUID())
+		List<SeatInfoViewDTO> availableSeats = Collections.singletonList(SeatInfoViewDTO.builder()
+				.seatId(UUID.randomUUID())
 				.build());
 		when(bookingService.getAvailableSeats(screeningRoom.getSeats(), bookings)).thenReturn(availableSeats);
 		ScreeningBookingInfoDTO expectedDto = ScreeningBookingInfoDTO.builder()
 				.screeningId(screeningId)
 				.availableSeats(Collections.singletonList(SeatInfoViewDTO.builder()
 						.seatId(availableSeats.get(0)
-								.getUuid())
+								.getSeatId())
 						.build()))
 				.build();
 		when(screeningSeatBookingInfoMapper.toDto(screening)).thenReturn(expectedDto);
@@ -160,6 +161,5 @@ class ScreeningServiceImplTest {
 				.size(), actualDto.get()
 				.getAvailableSeats()
 				.size());
-		verify(seatViewInfoMapper, times(1)).toDto(any());
 	}
 }
