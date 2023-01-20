@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import touk.recru.app.dto.screening.MovieScreeningDTO;
 import touk.recru.app.dto.screening.ScreeningBookingInfoDTO;
 import touk.recru.app.exception.DataIntegrationException;
+import touk.recru.app.exception.ScreeningNotFoundException;
 import touk.recru.app.facade.ScreeningFacade;
 
 import java.time.LocalDateTime;
@@ -20,33 +21,34 @@ import java.util.UUID;
 public class ScreeningController {
 	private final ScreeningFacade screeningFacade;
 
-	@GetMapping("/search")
+	@GetMapping(
+			value = {
+					"/",
+					""
+			}
+	)
 	public ResponseEntity<Page<MovieScreeningDTO>> searchScreening(
-			@RequestParam(required = false)
+			@RequestParam
 			LocalDateTime from,
 			@RequestParam(required = false)
 			LocalDateTime to,
-			@RequestParam(required = false)
+			@RequestParam(
+					required = false,
+					defaultValue = "0"
+			)
 			Integer page,
-			@RequestParam(required = false)
+			@RequestParam(
+					required = false,
+					defaultValue = "20"
+			)
 			Integer size) {
-		if (page != null && size != null && from != null && to != null) {
-			return ResponseEntity.ok(screeningFacade.search(from, to, page, size));
-		}
-		if (page != null && size != null && from != null) {
+		if (to == null) {
 			return ResponseEntity.ok(screeningFacade.search(from, page, size));
 		}
-		if (from != null && to != null) {
-			return ResponseEntity.ok(screeningFacade.search(from, to));
-		}
-		if (from != null) {
-			return ResponseEntity.ok(screeningFacade.search(from));
-		}
-		return ResponseEntity.badRequest()
-				.build();
+		return ResponseEntity.ok(screeningFacade.search(from, to, page, size));
 	}
 
-	@GetMapping("/search/available/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<ScreeningBookingInfoDTO> searchScreeningBookingInfo(
 			@PathVariable("id")
 			UUID screeningId) {
@@ -65,6 +67,16 @@ public class ScreeningController {
 	@ExceptionHandler(DataIntegrationException.class)
 	public ResponseEntity<String> dataIntegrationException(DataIntegrationException e) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(e.getMessage());
+	}
+
+	@ResponseStatus(
+			value = HttpStatus.BAD_REQUEST,
+			reason = "Screening not found"
+	)
+	@ExceptionHandler(ScreeningNotFoundException.class)
+	public ResponseEntity<String> screeningNotFoundException(ScreeningNotFoundException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 				.body(e.getMessage());
 	}
 }

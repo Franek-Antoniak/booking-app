@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-interface ScreeningRepositoryImpl extends ScreeningRepository, JpaRepository<Screening, Long> {
+interface JpaScreeningRepository extends ScreeningRepository, JpaRepository<Screening, Long> {
 	Page<Screening> findScreeningByScreeningTimeAfter(LocalDateTime screeningTimeStart, Pageable pageable);
 
 	Page<Screening> findScreeningByScreeningTimeBetween(LocalDateTime screeningTimeStart,

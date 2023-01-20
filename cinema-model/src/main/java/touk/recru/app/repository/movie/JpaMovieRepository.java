@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import touk.recru.app.entity.Movie;
 
 @Repository
-public interface MovieRepositoryImpl extends MovieRepository, JpaRepository<Movie, Long> {
+public interface JpaMovieRepository extends MovieRepository, JpaRepository<Movie, Long> {
 }

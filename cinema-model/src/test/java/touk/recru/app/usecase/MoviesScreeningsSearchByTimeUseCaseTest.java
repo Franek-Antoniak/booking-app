@@ -60,28 +60,6 @@ class MoviesScreeningsSearchByTimeUseCaseTest {
 			// then
 			assertEquals(expectedPage, result);
 		}
-
-		@Test
-		public void compute_WithDefaultPageable() {
-			// given
-			LocalDateTime from = LocalDateTime.now();
-			LocalDateTime to = LocalDateTime.now()
-					.plusDays(4);
-			Pageable pageable = factory.defaultPageable();
-			MovieScreeningDTO expectedValue = MovieScreeningDTO.builder()
-					.movieTitle("title")
-					.screeningId(UUID.randomUUID())
-					.duration(Duration.ofMinutes(120))
-					.startTime(from)
-					.build();
-			Page<MovieScreeningDTO> expectedPage = new PageImpl<>(List.of(expectedValue));
-			// when
-			when(screeningService.searchByTime(from, to, pageable)).thenReturn(expectedPage);
-
-			Page<MovieScreeningDTO> result = useCase.compute(from, to);
-			// then
-			assertEquals(expectedPage, result);
-		}
 	}
 
 	@Nested
@@ -111,26 +89,6 @@ class MoviesScreeningsSearchByTimeUseCaseTest {
 			when(screeningService.searchByTime(from, pageable)).thenReturn(expectedPage);
 
 			Page<MovieScreeningDTO> result = useCase.compute(from, pageable.getPageNumber(), pageable.getPageSize());
-			// then
-			assertEquals(expectedPage, result);
-		}
-
-		@Test
-		public void compute_WithDefaultPageable() {
-			// given
-			LocalDateTime from = LocalDateTime.now();
-			Pageable pageable = factory.defaultPageable();
-			MovieScreeningDTO expectedValue = MovieScreeningDTO.builder()
-					.movieTitle("title")
-					.screeningId(UUID.randomUUID())
-					.duration(Duration.ofMinutes(120))
-					.startTime(from)
-					.build();
-			Page<MovieScreeningDTO> expectedPage = new PageImpl<>(List.of(expectedValue));
-			// when
-			when(screeningService.searchByTime(from, pageable)).thenReturn(expectedPage);
-
-			Page<MovieScreeningDTO> result = useCase.compute(from);
 			// then
 			assertEquals(expectedPage, result);
 		}

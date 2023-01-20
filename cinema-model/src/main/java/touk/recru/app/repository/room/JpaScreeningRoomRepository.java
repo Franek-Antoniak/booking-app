@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-interface ScreeningRoomRepositoryImpl extends ScreeningRoomRepository, JpaRepository<ScreeningRoom, Long> {
+interface JpaScreeningRoomRepository extends ScreeningRoomRepository, JpaRepository<ScreeningRoom, Long> {
 	List<ScreeningRoom> findAll();
 
 	Optional<ScreeningRoom> findById(Long id);

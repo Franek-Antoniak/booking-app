@@ -14,6 +14,7 @@ import touk.recru.app.entity.Booking;
 import touk.recru.app.entity.Screening;
 import touk.recru.app.entity.Seat;
 import touk.recru.app.exception.DataIntegrationException;
+import touk.recru.app.exception.ScreeningNotFoundException;
 import touk.recru.app.mapper.room.ScreeningSeatBookingInfoMapper;
 import touk.recru.app.mapper.screening.ScreeningViewInfoMapper;
 import touk.recru.app.mapper.seat.SeatViewInfoMapper;
@@ -58,21 +59,18 @@ class ScreeningServiceImpl extends ScreeningService {
 			isolation = Isolation.SERIALIZABLE
 	)
 	public Optional<ScreeningBookingInfoDTO> searchAvailableSeats(UUID screeningId) {
-		Optional<Screening> screening = screeningRepository.findScreeningByUuid(screeningId);
-		if (screening.isEmpty()) {
-			return Optional.empty();
-		}
-		Screening screeningEntity = screening.get();
-		List<Seat> seats = screeningRoomRepository.findById(screeningEntity.getScreeningRoom()
+		Screening screening = screeningRepository.findScreeningByUuid(screeningId)
+				.orElseThrow(() -> new ScreeningNotFoundException("Screening with id: " + screeningId + " not found"));
+		List<Seat> seats = screeningRoomRepository.findById(screening.getScreeningRoom()
 						.getId())
 				.orElseThrow(() -> new DataIntegrationException("ScreeningId isn't valid or room doesn't exist"))
 				.getSeats();
-		List<Booking> bookings = bookingRepository.findAllByScreening(screeningEntity);
+		List<Booking> bookings = bookingRepository.findAllByScreening(screening);
 		List<SeatInfoViewDTO> availableSeats = bookingService.getAvailableSeats(seats, bookings)
 				.stream()
 				.map(seatViewInfoMapper::toDto)
 				.collect(Collectors.toList());
-		ScreeningBookingInfoDTO screeningBookingInfoDTO = screeningSeatBookingInfoMapper.toDto(screeningEntity);
+		ScreeningBookingInfoDTO screeningBookingInfoDTO = screeningSeatBookingInfoMapper.toDto(screening);
 		screeningBookingInfoDTO.setAvailableSeats(availableSeats);
 		return Optional.of(screeningBookingInfoDTO);
 	}
